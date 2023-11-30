@@ -1,0 +1,60 @@
+# One Kafka container and One Zookeeper Container with volumes configured
+version: '3'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.0.1
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2181:2181
+  #    volumes:
+  #      - zk-data:/var/lib/zookeeper/data # for Data
+  #      - zk-txn-logs:/var/lib/zookeeper/log # for transaction logs
+  ##########################KafkA#########################
+  # Each Kafka listener will be configured for each ip/domain with a unique port #
+  # ex localhost:port will have local host access to docker container and external host services #
+  # ex kafka:port will only have access internally to all containers within a same network #
+  # ex ip:port will have external access from other host to this host #
+  kafka:
+    image: confluentinc/cp-kafka:7.0.1
+    container_name: kafka
+    environment:
+      ## Configure listener here like ip:port for external access and localhost:port for host only access
+      ## or configure localhost:port1 & ip:port2 together for enabling host as well as external access both
+      ## Here Plaintext refers to Protocol for Kafka
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      ### For listening to multiple listeners add the name as follows below with different ports for each
+      # LISTENER_1://localhost:29092,LISTENER_2://10.138.154.16:9092
+      ### Then mention the same in KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+      # KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_BROKER_ID: 2
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - 9092:9092
+#      - 29092:29092 uncomment for multiple listeners and add more ports for each listener
+#    volumes:
+#      - kafka-data:/var/lib/kafka/data
+
+############ Uncomment to enable volumes for mounting for data persistence and volumes in each service
+#volumes:
+#  kafka-data:
+#    driver: local
+#    driver_opts:
+#      o: bind
+#      type: none
+#      device: /var/db/kafka/data
+#  zk-data:
+#    driver: local
+#    driver_opts:
+#      o: bind
+#      type: none
+#      device: /var/db/zk/data
+#  zk-txn-logs:
+#    driver: local
+#    driver_opts:
+#      o: bind
+#      type: none
+#      device: /var/db/zk/txn-logs
