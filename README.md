@@ -1,5 +1,8 @@
 ### Spring Boot Microservices
 
+The system aims to automate processes, enhance data management efficiency, and establish a secure platform. It focuses on facilitating seamless and accurate online ordering.
+Technologies: Java, Spring Boot, Spring Cloud, Docker, MongoDB, MySQL, Keycloak, Netflix Eureka, Kafka
+
 ### Running the Application with Docker
 
 1. Run `mvn clean package -DskipTests` to build the applications and create the Docker image locally.
